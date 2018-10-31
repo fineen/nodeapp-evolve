@@ -1,40 +1,31 @@
-import {Service} from 'typedi';
-import {PostService} from '../services/post';
-import {Controller, Get, Post, Delete} from '../decorators';
+import { Service, Inject } from 'typedi';
+import { PostService } from '../services/post';
+import { Get, Post, Delete, Req, Res, Params } from '../decorators';
 
 @Service()
 export class PostsController {
-
-  constructor(private postService: PostService) {}
+  //constructor(private postService: PostService) {}
+  @Inject()
+  postService: PostService;
 
   @Get('/posts')
-  all() {
-    return (ctx, next) => {
-      ctx.body = this.postService.findAll();
-    }
+  all(@Req() req, @Res() res) {
+    res.body = this.postService.findAll();
   }
 
   @Get('/posts/:id')
-  one() {
-    return (ctx, next) => {
-      const id = ctx.params.id;
-      ctx.body = this.postService.findOne(id);
-    }
+  one(@Res() res, @Params('id') id) {
+    res.body = this.postService.findOne(id);
   }
 
   @Post('/posts')
-  post() {
-    return (ctx, next) => {
-      const post = ctx.request.body;
-      ctx.body = this.postService.save(post);
-    }
+  post(@Req() req, @Res() res) {
+    const post = req.body;
+    res.body = this.postService.save(post);
   }
 
   @Delete('/posts/:id')
-  delete() {
-    return (ctx, next) => {
-      const id = ctx.params.id;
-      ctx.body = this.postService.remove(id);
-    }
+  delete(@Res() res, @Params('id') id) {
+    res.body = this.postService.remove(id);
   }
 }
